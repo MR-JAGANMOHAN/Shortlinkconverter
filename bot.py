@@ -111,7 +111,7 @@ async def Doodstream_uploader(bot, message):
 
 
 @bot.on_message(filters.photo & filters.private)
-async def Doodstream_uploader(bot, message):
+def Doodstream_uploader(bot, message):
     new_string = str(message.caption)
     conv = await message.reply("Converting...")
     dele = conv["message_id"]
