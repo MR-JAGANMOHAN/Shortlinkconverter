@@ -12,14 +12,14 @@ from bs4 import BeautifulSoup
 import requests
 import re
 
-API_ID = environ.get('API_ID')
-API_HASH = environ.get('API_HASH')
-BOT_TOKEN = environ.get('BOT_TOKEN')
-MDISK_API = environ.get('MDISK_API')
-DOODSTREAM_API_KEY = environ.get('DOODSTREAM_API_KEY')
-API_KEY = environ.get('API_KEY')
-CHANNEL = environ.get('CHANNEL')
-HOWTO = environ.get('HOWTO')
+API_ID = environ.get('API_ID', '13115322')
+API_HASH = environ.get('API_HASH', 'f28fbd1367ddda2e6f863c3129323743')
+BOT_TOKEN = environ.get('BOT_TOKEN', '5472335300:AAGOgL9tR8R-MlAInG9fW-Aqv6Zd1qE8J6U')
+MDISK_API = environ.get('MDISK_API', 'zwxo6CxXnwc5vnNqj7PT')
+DOODSTREAM_API_KEY = environ.get('DOODSTREAM_API_KEY', '250456u7hf0h2l4m8f4o5w')
+API_KEY = environ.get('API_KEY', '6b341a7a92117e006798840ccb4a04e9a72c3879')
+CHANNEL = environ.get('CHANNEL', 'nenmemeravtha_1')
+HOWTO = environ.get('HOWTO', 'https://t.me/Telugu_Babai/9')
 bot = Client('Doodstream bot',
              api_id=API_ID,
              api_hash=API_HASH,
