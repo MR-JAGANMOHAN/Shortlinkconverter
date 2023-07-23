@@ -29,23 +29,74 @@ bot = Client('Doodstream bot',
 
 
 @bot.on_message(filters.command('start') & filters.private)
-async def start(bot, message):
+def start(bot, message):
     await message.reply(
         f"**Welcome ⚡, {message.chat.first_name}!**\n\n"
         "**I am the fastest Doodstream Link converter!\nSend any post with Dood link,\ni will automagically convert the Dood links to your account ✨\n Made By @SuryaPrabhas1245 🔥 **")
 
 @bot.on_message(filters.command('help') & filters.private)
-async def start(bot, message):
+def start(bot, message):
     await message.reply(
         f"**Hello, {message.chat.first_name}!**\n\n"
         "**If you send post which had Doodstream Links, texts & images... Than I'll convert & replace all Doodstream links with your Doodstream links \nMessage me @SuryaPrabhas1245 For more help-**")
 
 @bot.on_message(filters.command('support') & filters.private)
-async def start(bot, message):
+def start(bot, message):
     await message.reply(
         f"**Hey, {message.chat.first_name}!**\n\n"
         "**Message Me Your Problem @SuryaPrabhas1245**")
     
+def multi_Doodstream_up(ml_string):
+    list_string = ml_string.splitlines()
+    ml_string = ' \n'.join(list_string)
+    new_ml_string = list(map(str, ml_string.split(" ")))
+    new_ml_string = remove_username(new_ml_string)
+    new_join_str = "".join(new_ml_string)
+
+    urls = re.findall(r'(https?://[^\s]+)', new_join_str)
+
+    nml_len = len(new_ml_string)
+    u_len = len(urls)
+    url_index = []
+    count = 0
+    for i in range(nml_len):
+        for j in range(u_len):
+            if (urls[j] in new_ml_string[i]):
+                url_index.append(count)
+        count += 1
+    new_urls = new_Doodstream_url(urls)
+    url_index = list(dict.fromkeys(url_index))
+    i = 0
+    for j in url_index:
+        new_ml_string[j] = new_ml_string[j].replace(urls[i], new_urls[i])
+        i += 1
+
+    new_string = " ".join(new_ml_string)
+    return addFooter(new_string)
+
+
+def new_Doodstream_url(urls):
+    new_urls = []
+    for i in urls:
+        time.sleep(0.2)
+        new_urls.append(Doodstream_up(i))
+    return new_urls
+
+
+def remove_username(new_List):
+    for i in new_List:
+        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
+            new_List.remove(i)
+    return new_List
+
+def addFooter(str):
+    footer = """
+    ━━━━━━━━━━━━━━━
+How To Watch ?  :""" + HOWTO + """
+━━━━━━━━━━━━━━━
+⭐️ Join ➡️ t.me/""" + CHANNEL
+    return str + footer
+
 @bot.on_message(filters.text & filters.private)
 async def Doodstream_uploader(bot, message):
     new_string = str(message.text)
@@ -71,115 +122,5 @@ async def Doodstream_uploader(bot, message):
             await message.reply(f'{Doodstream_link}' , quote=True)
         else:
             await bot.delete_messages(chat_id=message.chat.id, message_ids=dele)
-            await bot.send_photo(message.chat.id, message.photo.file_id, caption=f'{Doodstream_link}')
-    except Exception as e:
-        await message.reply(f'Error: {e}', quote=True)
-
-
-async def get_ptitle(url):
-  
-    html_text = requests.get(url).text
-    soup = BeautifulSoup(html_text, 'html.parser')
-    for title in soup.find_all('title'):
-        pass
-    title = list(title.get_text())
-    title = title[8:]
-    str = 't.me/' + CHANNEL + ' '
-    for i in title:
-        str = str + i
-    lst = list(html_text.split(","))
-    c = 0
-    for i in lst:
-        if ("""/e/""" in i):
-            found = lst[c]
-            break
-        c += 1
-
-    # Doodstream.com link
-    Doodstream_video_id = list(found.split(":"))
-    video_id = Doodstream_video_id[2]
-    video_id = list(video_id.split(","))
-    v_id = video_id[0]
-    #v_len = len(v_id)
-    #v_id = v_id[1:v_len - 2]
-
-    v_url = 'https://dood.ws/d/' + v_id
-    res = [str, v_url]
-    return res
-
-
-async def Doodstream_up(link):
-    if ('Doodstream' in link  or 'bit' in link ):
-        res = await get_ptitle(link)
-        title_Doodstream = res[0]
-        link = res[1]
-    else:
-        title_new = urlparse(link)
-        title_new = os.path.basename(title_new.path)
-        title_Doodstream = '@' + CHANNEL + title_new
-    res = requests.get(
-         f'https://doodapi.com/api/upload/url?key={DOODSTREAM_API_KEY}&url={link}&new_title={title_Doodstream}')
-         
-    data = res.json()
-    data = dict(data)
-    print(data)
-    v_id = data['result']['filecode']
-    #bot.delete_messages(con)
-    v_url = 'https://dood.ws/d/' + v_id
-    s = Shortener(api_key=BITLY_KEY)
-    v_url = s.bitly.short(v_url)
-    return (v_url)
-
-
-async def multi_Doodstream_up(ml_string):
-    list_string = ml_string.splitlines()
-    ml_string = ' \n'.join(list_string)
-    new_ml_string = list(map(str, ml_string.split(" ")))
-    new_ml_string = await remove_username(new_ml_string)
-    new_join_str = "".join(new_ml_string)
-
-    urls = re.findall(r'(https?://[^\s]+)', new_join_str)
-
-    nml_len = len(new_ml_string)
-    u_len = len(urls)
-    url_index = []
-    count = 0
-    for i in range(nml_len):
-        for j in range(u_len):
-            if (urls[j] in new_ml_string[i]):
-                url_index.append(count)
-        count += 1
-    new_urls = await new_Doodstream_url(urls)
-    url_index = list(dict.fromkeys(url_index))
-    i = 0
-    for j in url_index:
-        new_ml_string[j] = new_ml_string[j].replace(urls[i], new_urls[i])
-        i += 1
-
-    new_string = " ".join(new_ml_string)
-    return await addFooter(new_string)
-
-
-async def new_Doodstream_url(urls):
-    new_urls = []
-    for i in urls:
-        time.sleep(0.2)
-        new_urls.append(await Doodstream_up(i))
-    return new_urls
-
-
-async def remove_username(new_List):
-    for i in new_List:
-        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
-            new_List.remove(i)
-    return new_List
-
-async def addFooter(str):
-    footer = """
-    ━━━━━━━━━━━━━━━
-How To Watch ?  :""" + HOWTO + """
-━━━━━━━━━━━━━━━
-⭐️ Join ➡️ t.me/""" + CHANNEL
-    return str + footer
-
+            await bot.send
 bot.run()
