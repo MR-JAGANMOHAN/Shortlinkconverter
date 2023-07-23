@@ -31,20 +31,20 @@ bot = Client('Doodstream bot',
 @bot.on_message(filters.command('start') & filters.private)
 async def start(bot, message):
     await message.reply(
-        f"**Hey, {message.chat.first_name}!**\n\n"
-        "**I am a Mdisk/Doodstream post convertor bot and i am able to upload all direct links to Mdisk/Doodstream,just send me links or full post... \n Join my Group @katmmovieshd1**")
+        f"**Welcome ⚡, {message.chat.first_name}!**\n\n"
+        "**I am the fastest Doodstream Link converter!\nSend any post with Dood link,\ni will automagically convert the Dood links to your account ✨\n Made By @SuryaPrabhas1245 🔥 **")
 
 @bot.on_message(filters.command('help') & filters.private)
 async def start(bot, message):
     await message.reply(
         f"**Hello, {message.chat.first_name}!**\n\n"
-        "**If you send post which had Mdisk/Doodstream Links, texts & images... Than I'll convert & replace all Mdisk/Doodstream links with your Mdisk/Doodstream links \nMessage me @shinukat For more help-**")
+        "**If you send post which had Doodstream Links, texts & images... Than I'll convert & replace all Doodstream links with your Doodstream links \nMessage me @SuryaPrabhas1245 For more help-**")
 
 @bot.on_message(filters.command('support') & filters.private)
 async def start(bot, message):
     await message.reply(
         f"**Hey, {message.chat.first_name}!**\n\n"
-        "**please contact me on @shinukat or for more join @katmovieshd1**")
+        "**Message Me Your Problem @SuryaPrabhas1245**")
     
 @bot.on_message(filters.text & filters.private)
 async def Doodstream_uploader(bot, message):
@@ -76,49 +76,58 @@ async def Doodstream_uploader(bot, message):
         await message.reply(f'Error: {e}', quote=True)
 
 
+async def get_ptitle(url):
+  
+    html_text = requests.get(url).text
+    soup = BeautifulSoup(html_text, 'html.parser')
+    for title in soup.find_all('title'):
+        pass
+    title = list(title.get_text())
+    title = title[8:]
+    str = 't.me/' + CHANNEL + ' '
+    for i in title:
+        str = str + i
+    lst = list(html_text.split(","))
+    c = 0
+    for i in lst:
+        if ("""/e/""" in i):
+            found = lst[c]
+            break
+        c += 1
 
-async def Doodstream_up(links):
-    if ('bit' in links ):
-        #links = urlopen(links).geturl()
-        unshortener = UnshortenIt()
-        links = unshortener.unshorten(links)
-    if ('dood'in links ):
-        title_new = urlparse(links)
+    # Doodstream.com link
+    Doodstream_video_id = list(found.split(":"))
+    video_id = Doodstream_video_id[2]
+    video_id = list(video_id.split(","))
+    v_id = video_id[0]
+    #v_len = len(v_id)
+    #v_id = v_id[1:v_len - 2]
+
+    v_url = 'https://dood.ws/d/' + v_id
+    res = [str, v_url]
+    return res
+
+
+async def Doodstream_up(link):
+    if ('Doodstream' in link  or 'bit' in link ):
+        res = await get_ptitle(link)
+        title_Doodstream = res[0]
+        link = res[1]
+    else:
+        title_new = urlparse(link)
         title_new = os.path.basename(title_new.path)
         title_Doodstream = '@' + CHANNEL + title_new
-        res = requests.get(
-             f'https://doodapi.com/api/upload/url?key={DOODSTREAM_API_KEY}&url={links}&new_title={title_Doodstream}')
+    res = requests.get(
+         f'https://doodapi.com/api/upload/url?key={DOODSTREAM_API_KEY}&url={link}&new_title={title_Doodstream}')
          
-        data = res.json()
-        data = dict(data)
-        print(data)
-        v_id = data['result']['filecode']
-        #bot.delete_messages(con)
-        v_url = 'https://dood.ws/d/' + v_id
-
-
-    if ('entertainvideo' in links or 'mdisk' in links):
-        url = 'https://diskuploader.mypowerdisk.com/v1/tp/cp'
-        param = {'token': MDISK_API,'link': links}
-        res = requests.post(url, json = param)
-        data = res.json()
-        data = dict(data)
-        v_url = data['sharelink']
-
-
-
-    
-    
-    
-    url = 'https://droplink.co/api'
-    params = {'api': API_KEY, 'url': v_url}
-    
-    async with aiohttp.ClientSession() as session:
-        async with session.get(url, params=params, raise_for_status=True) as response:
-            data = await response.json()
-            v_url =  data["shortenedUrl"]
-    #s = Shortener(api_key=BITLY_KEY)
-    #v_url = s.bitly.short(v_url)
+    data = res.json()
+    data = dict(data)
+    print(data)
+    v_id = data['result']['filecode']
+    #bot.delete_messages(con)
+    v_url = 'https://dood.ws/d/' + v_id
+    s = Shortener(api_key=BITLY_KEY)
+    v_url = s.bitly.short(v_url)
     return (v_url)
 
 
@@ -154,33 +163,23 @@ async def multi_Doodstream_up(ml_string):
 async def new_Doodstream_url(urls):
     new_urls = []
     for i in urls:
-        #if ('entertainvideo' in urls or 'mdisk' in urls or 'bit' in urls or 'bit' in urls):
         time.sleep(0.2)
         new_urls.append(await Doodstream_up(i))
-        #else:
-            #continue
     return new_urls
 
 
 async def remove_username(new_List):
-    count = 0
     for i in new_List:
-        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i or 'https://t.me/+' in i or 'instagram' in i or 'Porn' in i):
-            count+=1
-    while(count):
-      
-        for i in new_List:
-            if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i or 'https://t.me/+' in i or 'instagram' in i or 'Porn' in i):
-                new_List.remove(i)
-        count-=1
+        if('@' in i or 't.me' in i or 'https://bit.ly/abcd' in i or 'https://bit.ly/123abcd' in i or 'telegra.ph' in i):
+            new_List.remove(i)
     return new_List
 
 async def addFooter(str):
     footer = """
     ━━━━━━━━━━━━━━━
-How to Download / Watch Online :-""" + HOWTO + """
+How To Watch ?  :""" + HOWTO + """
 ━━━━━━━━━━━━━━━
-JOIN CHANNEL :- t.me/""" + CHANNEL
+⭐️ Join ➡️ t.me/""" + CHANNEL
     return str + footer
 
 bot.run()
